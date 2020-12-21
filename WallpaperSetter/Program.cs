@@ -20,7 +20,7 @@ namespace WallpaperSetter
 
         static ManualResetEvent _quitEvent = new ManualResetEvent(false);
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             Console.Write("Minutes until next Wallpaper: ");
             var inputTime = Console.ReadLine()?.Trim();
@@ -33,7 +33,7 @@ namespace WallpaperSetter
             int timeout = int.Parse(inputTime) * 1000 * 60;
             var t = new Timer(timeout);
 
-            Console.WriteLine($"{DateTime.Now} - I'll see you at {DateTime.Now.AddMinutes(timeout)}");
+            Console.WriteLine($"I'll see you at {DateTime.Now.AddMilliseconds(timeout)}");
 
             t.Start();
             t.Elapsed += OnTimedEvent;
@@ -45,8 +45,7 @@ namespace WallpaperSetter
 
             _quitEvent.WaitOne();
 
-            Console.WriteLine("--PROCESS TERMINATED--");
-            Console.ReadKey();
+            Log("PROCESS TERMINATED");
         }
 
         private static void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -58,7 +57,7 @@ namespace WallpaperSetter
             var sNextImageUri = _imageUris[_imageUriPos];
             _imageUriPos++;
 
-            Console.WriteLine($"{DateTime.Now} - Setting wallpaper to: {sNextImageUri.AbsoluteUri}");
+            Log("Setting wallpaper to: {sNextImageUri.AbsoluteUri}");
 
             // Update wallpaper
             Wallpaper.Set(sNextImageUri, Wallpaper.Style.Stretched);
@@ -67,9 +66,12 @@ namespace WallpaperSetter
         private static async Task PopulateImageUris()
         {
             var igScrapper = new InstagramScrapper(_igTag);
-            Console.WriteLine("Populating images from hashtag...");
+            Log($"Populating images from #{_igTag} ...");
             _imageUris = await igScrapper.GetImageUris();
-            Console.WriteLine("Done populating!");
+            Log("Done populating!");
         }
+
+        private static void Log(string m) =>
+            Console.WriteLine($"[{DateTime.Now}] - {m}");
     }
 }
