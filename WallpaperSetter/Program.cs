@@ -22,7 +22,7 @@ namespace WallpaperSetter
         
         private static ManualResetEvent _quitEvent = new ManualResetEvent(false);
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             _logger = new Logger(LogOutput.Console);
 
@@ -45,6 +45,8 @@ namespace WallpaperSetter
                 eArgs.Cancel = true;
             };
 
+            await PopulateImageUris();
+
             _quitEvent.WaitOne();
 
             _logger.Log(LogLevel.Critical, "PROCESS TERMINATED");
@@ -52,14 +54,18 @@ namespace WallpaperSetter
 
         private static void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            if (_imageUris is null)
+            if (_imageUris is null || _imageUris.Length == 0)
                 PopulateImageUris().GetAwaiter().GetResult();
 
+            if (_imageUriPos < _imageUris.Length)
+                _imageUriPos++;
+            else
+                _imageUriPos = 0;
+            
             // Get Uri of image
             var sNextImageUri = _imageUris[_imageUriPos];
-            _imageUriPos++;
-
-            _logger.Log("Setting wallpaper to: {sNextImageUri.AbsoluteUri}");
+            
+            _logger.Log($"Setting wallpaper to: {sNextImageUri.AbsoluteUri}");
 
             // Update wallpaper
             Wallpaper.Set(sNextImageUri, Wallpaper.Style.Stretched);
