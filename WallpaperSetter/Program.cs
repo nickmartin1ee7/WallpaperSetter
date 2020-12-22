@@ -8,20 +8,24 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using Utilities;
 using Timer = System.Timers.Timer;
 
 namespace WallpaperSetter
 {
     class Program
     {
+        private static ILogger _logger;
         private static string _igTag;
         private static Uri[] _imageUris;
         private static int _imageUriPos = 0;
-
-        static ManualResetEvent _quitEvent = new ManualResetEvent(false);
+        
+        private static ManualResetEvent _quitEvent = new ManualResetEvent(false);
 
         static void Main(string[] args)
         {
+            _logger = new Logger(LogOutput.Console);
+
             Console.Write("Minutes until next Wallpaper: ");
             var inputTime = Console.ReadLine()?.Trim();
 
@@ -32,9 +36,7 @@ namespace WallpaperSetter
 
             int timeout = int.Parse(inputTime) * 1000 * 60;
             var t = new Timer(timeout);
-
-            Console.WriteLine($"I'll see you at {DateTime.Now.AddMilliseconds(timeout)}");
-
+            
             t.Start();
             t.Elapsed += OnTimedEvent;
             
@@ -45,7 +47,7 @@ namespace WallpaperSetter
 
             _quitEvent.WaitOne();
 
-            Log("PROCESS TERMINATED");
+            _logger.Log(LogLevel.Critical, "PROCESS TERMINATED");
         }
 
         private static void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -57,7 +59,7 @@ namespace WallpaperSetter
             var sNextImageUri = _imageUris[_imageUriPos];
             _imageUriPos++;
 
-            Log("Setting wallpaper to: {sNextImageUri.AbsoluteUri}");
+            _logger.Log("Setting wallpaper to: {sNextImageUri.AbsoluteUri}");
 
             // Update wallpaper
             Wallpaper.Set(sNextImageUri, Wallpaper.Style.Stretched);
@@ -66,12 +68,9 @@ namespace WallpaperSetter
         private static async Task PopulateImageUris()
         {
             var igScrapper = new InstagramScrapper(_igTag);
-            Log($"Populating images from #{_igTag} ...");
+            _logger.Log($"Populating images from #{_igTag} ...");
             _imageUris = await igScrapper.GetImageUris();
-            Log("Done populating!");
+            _logger.Log("Done populating!");
         }
-
-        private static void Log(string m) =>
-            Console.WriteLine($"[{DateTime.Now}] - {m}");
     }
 }

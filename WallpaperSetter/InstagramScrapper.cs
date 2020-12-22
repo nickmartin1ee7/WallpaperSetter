@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Utilities;
 
 namespace WallpaperSetter
 {
     class InstagramScrapper
     {
-        private HttpClient _client = new HttpClient();
-        private Uri _tagUri;
+        private readonly ILogger _logger;
+        private readonly HttpClient _client = new HttpClient();
+        private readonly Uri _tagUri;
 
         public InstagramScrapper(string tag)
         {
+            _logger = new Logger(GetType(), LogOutput.Console);
             _tagUri = new Uri($"https://www.instagram.com/explore/tags/{tag}/");
         }
 
@@ -41,12 +41,17 @@ namespace WallpaperSetter
 
             // Rate Limited?
             if (igResponse.EntryData.TagPage is null)
-                throw new ApplicationException("Instagram did not provide us with a full page! Try again later...");
+            {
+                var exp = new ApplicationException("Instagram did not provide us with a full page! Try again later...");
+                _logger.Log(exp);
+                throw exp;
+            }
 
             foreach (var edge in igResponse.EntryData.TagPage[0].Graphql.Hashtag.EdgeHashtagToMedia.Edges)
             {
                 var imageUri = edge.Node.DisplayUrl;
                 imageUris.Add(imageUri);
+                _logger.Log($"Adding {imageUri}");
             }
 
             return imageUris.ToArray();
