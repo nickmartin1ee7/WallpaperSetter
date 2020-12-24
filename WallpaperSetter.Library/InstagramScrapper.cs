@@ -12,10 +12,10 @@ namespace WallpaperSetter.Library
 {
     public class InstagramScrapper
     {
-        private readonly ILogger _logger;
         private readonly HttpClient _client = new HttpClient();
+        private readonly ILogger _logger;
         private readonly string _tag;
-        private FileInfo _saveFile;
+        private readonly FileInfo _saveFile;
 
         public InstagramScrapper(string tag)
         {
@@ -35,68 +35,84 @@ namespace WallpaperSetter.Library
 
         private async Task<IEnumerable<Uri>> GetImageUrisFromInstagramAsync()
         {
-            var content = await _client.GetStringAsync(new Uri($"https://www.instagram.com/explore/tags/{_tag}/"));
+            try
+            {
+                var content = await _client.GetStringAsync(new Uri($"https://www.instagram.com/explore/tags/{_tag}/"));
 
-            var aLinkRegex = new Regex("(<script type=\"text/javascript\">window._sharedData = ).*(</script>)");
+                var aLinkRegex = new Regex("(<script type=\"text/javascript\">window._sharedData = ).*(</script>)");
 
-            var parsedJson = aLinkRegex.Matches(content)[0].Value
-                    .Replace("<script type=\"text/javascript\">window._sharedData = ", "")
-                    .Replace(";</script>", "")
-                    .Replace(@"\u0026", "&")
-                ;
+                var parsedJson = aLinkRegex.Matches(content)[0].Value
+                        .Replace("<script type=\"text/javascript\">window._sharedData = ", "")
+                        .Replace(";</script>", "")
+                        .Replace(@"\u0026", "&")
+                    ;
 
-            var igResponse = JsonConvert.DeserializeObject<InstagramResponse>(parsedJson);
+                var igResponse = JsonConvert.DeserializeObject<InstagramResponse>(parsedJson);
 
-            // Rate Limited?
-            if (igResponse.EntryData.TagPage is null)
+                // Rate Limited?
+                if (igResponse.EntryData.TagPage is null) return null;
+
+                var imageUris = igResponse.EntryData.TagPage[0].Graphql.Hashtag.EdgeHashtagToMedia.Edges
+                    .Select(edge => edge.Node.DisplayUrl).ToList();
+
+                DumpImageUrisLocally(imageUris);
+
+                _logger.Log("Populated images from Instagram");
+                return imageUris;
+            }
+            catch (Exception)
             {
                 return null;
             }
-
-            var imageUris = igResponse.EntryData.TagPage[0].Graphql.Hashtag.EdgeHashtagToMedia.Edges
-                .Select(edge => edge.Node.DisplayUrl).ToList();
-
-            DumpImageUrisLocally(imageUris);
-
-            _logger.Log("Populated images from Instagram");
-
-            return imageUris;
         }
 
         private async Task<IEnumerable<Uri>> GetImagesFromFullInstaAsync()
         {
-            var uris = new List<Uri>();
+            try
+            {
+                var uris = new List<Uri>();
 
-            var content = await _client.GetStringAsync(new Uri($"https://fullinsta.photo/hashtag/{_tag}/"));
+                var content = await _client.GetStringAsync(new Uri($"https://fullinsta.photo/hashtag/{_tag}/"));
 
-            // TODO
+                // TODO
 
-            var aUris = uris.ToArray();
+                var aUris = uris.ToArray();
 
-            if (aUris.Length == 0) return null;
+                if (aUris.Length == 0) return null;
 
-            DumpImageUrisLocally(aUris);
+                DumpImageUrisLocally(aUris);
 
-            _logger.Log("Populated images from FullInsta");
+                _logger.Log("Populated images from FullInsta");
 
-            return aUris;
-
+                return aUris;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private async Task<IEnumerable<Uri>> GetImagesFromPreviousResults()
         {
-            // Read text
-            var text = await File.ReadAllTextAsync(_saveFile.FullName);
+            try
+            {
+                // Read text
+                var text = await File.ReadAllTextAsync(_saveFile.FullName);
 
-            // Deserialize
-            var urisFromJson = JsonConvert.DeserializeObject<Uri[]>(text);
+                // Deserialize
+                var urisFromJson = JsonConvert.DeserializeObject<Uri[]>(text);
 
-            if (urisFromJson?.Length == 0)
+                if (urisFromJson?.Length == 0)
+                    return null;
+
+                _logger.Log("Populated images from previous results");
+
+                return urisFromJson;
+            }
+            catch (Exception)
+            {
                 return null;
-
-            _logger.Log("Populated images from previous results");
-
-            return urisFromJson;
+            }
         }
 
         private void DumpImageUrisLocally(IEnumerable<Uri> imageUris)
