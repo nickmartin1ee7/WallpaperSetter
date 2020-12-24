@@ -4,7 +4,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace WallpaperSetter
+namespace WallpaperSetter.Library
 {
     public class InstagramResponse
     {

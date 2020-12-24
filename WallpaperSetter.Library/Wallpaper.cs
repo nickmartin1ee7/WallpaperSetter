@@ -6,7 +6,7 @@ using System.Drawing.Imaging;
 using System.Net;
 using Microsoft.Win32;
 
-namespace WallpaperSetter
+namespace WallpaperSetter.Library
 {
     public static class Wallpaper
     {

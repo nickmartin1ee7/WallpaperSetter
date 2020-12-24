@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Utilities;
 
-namespace WallpaperSetter
+namespace WallpaperSetter.Library
 {
-    class InstagramScrapper
+    public class InstagramScrapper
     {
         private readonly ILogger _logger;
         private readonly HttpClient _client = new HttpClient();

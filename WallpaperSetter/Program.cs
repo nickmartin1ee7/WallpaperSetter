@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Utilities;
+using WallpaperSetter.Library;
 using Timer = System.Timers.Timer;
 
 namespace WallpaperSetter
@@ -52,10 +53,10 @@ namespace WallpaperSetter
             _logger.Log(LogLevel.Critical, "PROCESS TERMINATED");
         }
 
-        private static void OnTimedEvent(object sender, ElapsedEventArgs e)
+        private static async void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             if (_imageUris is null || _imageUris.Length == 0)
-                PopulateImageUris().GetAwaiter().GetResult();
+                await PopulateImageUris();
 
             if (_imageUriPos < _imageUris.Length)
                 _imageUriPos++;
