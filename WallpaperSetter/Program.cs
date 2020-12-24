@@ -12,28 +12,36 @@ using Utilities;
 using WallpaperSetter.Library;
 using Timer = System.Timers.Timer;
 
-namespace WallpaperSetter
+namespace WallpaperSetter.Console
 {
-    class Program
+    internal class Program
     {
+        #region Fields
+
         private static ILogger _logger;
         private static string _igTag;
         private static Uri[] _imageUris;
-        private static int _imageUriPos = 0;
-        
-        private static ManualResetEvent _quitEvent = new ManualResetEvent(false);
+        private static int _imageUriPos;
 
-        static async Task Main(string[] args)
+        #endregion
+
+        #region Events
+
+        private static ManualResetEvent _quitEvent = new ManualResetEvent(false);
+        
+        #endregion
+
+        public static async Task Main(string[] args)
         {
             _logger = new Logger(LogOutput.Console);
 
-            Console.Write("Minutes until next Wallpaper: ");
-            var inputTime = Console.ReadLine()?.Trim();
+            System.Console.Write("Minutes until next Wallpaper: ");
+            var inputTime = System.Console.ReadLine()?.Trim();
 
             if (inputTime is null || inputTime is "") inputTime = "1";
 
-            Console.Write("Instagram Tag: ");
-            _igTag = Console.ReadLine()?.Trim() ?? string.Empty;
+            System.Console.Write("Instagram Tag: ");
+            _igTag = System.Console.ReadLine()?.Trim() ?? string.Empty;
 
             int timeout = int.Parse(inputTime) * 1000 * 60;
             var t = new Timer(timeout);
@@ -41,7 +49,7 @@ namespace WallpaperSetter
             t.Start();
             t.Elapsed += OnTimedEvent;
             
-            Console.CancelKeyPress += (sender, eArgs) => {
+            System.Console.CancelKeyPress += (sender, eArgs) => {
                 _quitEvent.Set();
                 eArgs.Cancel = true;
             };
