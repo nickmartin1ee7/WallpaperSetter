@@ -20,10 +20,10 @@ namespace WallpaperSetter.Library
         {
             _logger = new Logger(GetType(), LogOutput.Console);
             _tag = tag;
-            _saveFile = new FileInfo(Path.Combine(Path.GetTempPath(), "imageUris.json"));
+            _saveFile = new FileInfo(Path.Combine(Path.GetTempPath(), $"{tag}-imageUris.json"));
         }
 
-        public async Task<Uri[]> GetImageUris()
+        public async Task<Uri[]> GetImageUrisAsync()
         {
             var imageUris = new List<Uri>();
 
@@ -45,15 +45,13 @@ namespace WallpaperSetter.Library
             // Rate Limited?
             if (igResponse.EntryData.TagPage is null)
             {
-                _logger.Log("Instagram did not provide us with a full page! Using FullInsta.Photo uris.");
-                return await GetImagesFromFullInsta();
+                return await GetImagesFromFullInstaAsync();
             }
 
             foreach (var edge in igResponse.EntryData.TagPage[0].Graphql.Hashtag.EdgeHashtagToMedia.Edges)
             {
                 var imageUri = edge.Node.DisplayUrl;
                 imageUris.Add(imageUri);
-                _logger.Log($"Adding {imageUri}");
             }
 
             DumpImageUrisLocally(imageUris.ToArray());
@@ -61,7 +59,7 @@ namespace WallpaperSetter.Library
             return imageUris.ToArray();
         }
 
-        private async Task<Uri[]> GetImagesFromFullInsta()
+        private async Task<Uri[]> GetImagesFromFullInstaAsync()
         {
             var uris = new List<Uri>();
 
@@ -76,25 +74,21 @@ namespace WallpaperSetter.Library
                 DumpImageUrisLocally(aUris);
                 return aUris;
             }
-            else
-            {
-                var text = await File.ReadAllTextAsync(_saveFile.FullName);
-                var urisFromJson = JsonConvert.DeserializeObject<Uri[]>(text);
-                if (urisFromJson.Length > 1)
-                    return urisFromJson;
-                else
-                {
-                    var exp = new ApplicationException("No data was able to be retrieved!");
-                    _logger.Log(exp);
-                    throw exp;
-                }
-            }
+
+            var text = await File.ReadAllTextAsync(_saveFile.FullName);
+            var urisFromJson = JsonConvert.DeserializeObject<Uri[]>(text);
+            if (urisFromJson.Length > 1)
+                return urisFromJson;
+            
+            var exp = new ApplicationException("No data was able to be retrieved!");
+            _logger.Log(exp);
+            throw exp;
         }
 
         private void DumpImageUrisLocally(Uri[] imageUris)
         {
             var json = JsonConvert.SerializeObject(imageUris);
-            File.AppendAllText(Path.Combine(_saveFile.FullName), json);
+            File.WriteAllText(Path.Combine(_saveFile.FullName), json);
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Utilities;
 
 namespace WallpaperSetter.WpfApp
 {
@@ -20,9 +21,13 @@ namespace WallpaperSetter.WpfApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ILogger _logger;
+
         public MainWindow()
         {
             InitializeComponent();
+            
+            _logger = new Logger(GetType(), LogOutput.Console);
         }
     }
 }
