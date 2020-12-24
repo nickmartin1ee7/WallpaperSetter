@@ -30,6 +30,7 @@ namespace WallpaperSetter.Console
             var app = new ConsoleApp(timeInMinutes, tag);
             app.Run().GetAwaiter().GetResult();
 
+            WriteLine("== PROGRAM ENDED ==");
             ReadKey();
         }
     }

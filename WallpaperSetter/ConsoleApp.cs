@@ -40,19 +40,25 @@ namespace WallpaperSetter.Console
             _logger.Log($"Scrapping Instagram for images with #{_igTag}");
 
             var enumerableUris = await scrapper.GetImageUrisAsync();
+
+            if (enumerableUris is null)
+            {
+                _logger.Log(LogLevel.Error, "Unable to populate images from providers!");
+                return;
+            }
+
             var uris = enumerableUris as Uri[] ?? enumerableUris.ToArray();
+
+            if (uris.Length == 0)
+            {
+                _logger.Log(LogLevel.Error, "An empty URI list was provided by providers!");
+                return;
+            }
 
             _imageUriRepository.AddRange(uris);
 
             _logger.Log($"Populated with {uris.Length} images");
-
-            if (uris.Length == 0)
-            {
-                var ex = new ApplicationException("No images were available. Try again later...");
-                _logger.Log(ex);
-                throw ex;
-            }
-
+            
             _timer.Start();
             _logger.Log($"Timer started for intervals of {_timer.Interval}ms");
 
@@ -65,7 +71,7 @@ namespace WallpaperSetter.Console
 
             _timer.Elapsed -= OnTimedEvent;
 
-            _logger.Log(LogLevel.Critical, "APPLICATION TERMINATED");
+            _logger.Log(LogLevel.Critical, "Interrupt detected! Ending application...");
         }
 
         #region EventHandlers
