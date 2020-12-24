@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,43 +24,46 @@ namespace WallpaperSetter.Library
             _saveFile = new FileInfo(Path.Combine(Path.GetTempPath(), $"{tag}-imageUris.json"));
         }
 
-        public async Task<Uri[]> GetImageUrisAsync()
+        public async Task<IEnumerable<Uri>> GetImageUrisAsync()
         {
-            var imageUris = new List<Uri>();
+            var imageUris = await GetImageUrisFromInstagramAsync();
+            imageUris ??= await GetImagesFromFullInstaAsync();
+            imageUris ??= await GetImagesFromPreviousResults();
 
+            return imageUris;
+        }
+
+        private async Task<IEnumerable<Uri>> GetImageUrisFromInstagramAsync()
+        {
             var content = await _client.GetStringAsync(new Uri($"https://www.instagram.com/explore/tags/{_tag}/"));
-            
+
             var aLinkRegex = new Regex("(<script type=\"text/javascript\">window._sharedData = ).*(</script>)");
-            //var unicodeRegex = new Regex(@"\\u[0-9a-z]{4}");
 
             var parsedJson = aLinkRegex.Matches(content)[0].Value
-                .Replace("<script type=\"text/javascript\">window._sharedData = ", "")
-                .Replace(";</script>", "")
-                .Replace(@"\u0026", "&")
+                    .Replace("<script type=\"text/javascript\">window._sharedData = ", "")
+                    .Replace(";</script>", "")
+                    .Replace(@"\u0026", "&")
                 ;
-
-            //parsedJson = unicodeRegex.Replace(parsedJson, "");
 
             var igResponse = JsonConvert.DeserializeObject<InstagramResponse>(parsedJson);
 
             // Rate Limited?
             if (igResponse.EntryData.TagPage is null)
             {
-                return await GetImagesFromFullInstaAsync();
+                return null;
             }
 
-            foreach (var edge in igResponse.EntryData.TagPage[0].Graphql.Hashtag.EdgeHashtagToMedia.Edges)
-            {
-                var imageUri = edge.Node.DisplayUrl;
-                imageUris.Add(imageUri);
-            }
+            var imageUris = igResponse.EntryData.TagPage[0].Graphql.Hashtag.EdgeHashtagToMedia.Edges
+                .Select(edge => edge.Node.DisplayUrl).ToList();
 
-            DumpImageUrisLocally(imageUris.ToArray());
+            DumpImageUrisLocally(imageUris);
 
-            return imageUris.ToArray();
+            _logger.Log("Populated images from Instagram");
+
+            return imageUris;
         }
 
-        private async Task<Uri[]> GetImagesFromFullInstaAsync()
+        private async Task<IEnumerable<Uri>> GetImagesFromFullInstaAsync()
         {
             var uris = new List<Uri>();
 
@@ -69,23 +73,33 @@ namespace WallpaperSetter.Library
 
             var aUris = uris.ToArray();
 
-            if (aUris.Length > 0)
-            {
-                DumpImageUrisLocally(aUris);
-                return aUris;
-            }
+            if (aUris.Length == 0) return null;
 
-            var text = await File.ReadAllTextAsync(_saveFile.FullName);
-            var urisFromJson = JsonConvert.DeserializeObject<Uri[]>(text);
-            if (urisFromJson.Length > 1)
-                return urisFromJson;
-            
-            var exp = new ApplicationException("No data was able to be retrieved!");
-            _logger.Log(exp);
-            throw exp;
+            DumpImageUrisLocally(aUris);
+
+            _logger.Log("Populated images from FullInsta");
+
+            return aUris;
+
         }
 
-        private void DumpImageUrisLocally(Uri[] imageUris)
+        private async Task<IEnumerable<Uri>> GetImagesFromPreviousResults()
+        {
+            // Read text
+            var text = await File.ReadAllTextAsync(_saveFile.FullName);
+
+            // Deserialize
+            var urisFromJson = JsonConvert.DeserializeObject<Uri[]>(text);
+
+            if (urisFromJson?.Length == 0)
+                return null;
+
+            _logger.Log("Populated images from previous results");
+
+            return urisFromJson;
+        }
+
+        private void DumpImageUrisLocally(IEnumerable<Uri> imageUris)
         {
             var json = JsonConvert.SerializeObject(imageUris);
             File.WriteAllText(Path.Combine(_saveFile.FullName), json);

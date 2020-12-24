@@ -40,7 +40,9 @@ namespace WallpaperSetter.Console
 
             _logger.Log($"Scrapping Instagram for images with #{_igTag}");
 
-            var uris = await scrapper.GetImageUrisAsync();
+            var enumerableUris = await scrapper.GetImageUrisAsync();
+            var uris = enumerableUris as Uri[] ?? enumerableUris.ToArray();
+
             _imageUriRepository.AddRange(uris);
 
             _logger.Log($"Populated with {uris.Length} images");
