@@ -15,7 +15,9 @@ namespace WallpaperSetter.Console
                 Clear();
 
                 Write("Minutes until next Wallpaper: ");
-                if (!int.TryParse(ReadLine()?.Trim(), out var inputTime)) continue;
+                if (!int.TryParse(ReadLine()?.Trim(), out var inputTime)
+                || inputTime <= 0)
+                    continue;
 
                 timeInMinutes = inputTime * 1000 * 60;
 
