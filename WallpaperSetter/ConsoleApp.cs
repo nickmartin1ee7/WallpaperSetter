@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Utilities;
 using WallpaperSetter.Library;
 using Timer = System.Timers.Timer;
+using static System.Console;
 
 namespace WallpaperSetter.Console
 {
@@ -57,7 +56,7 @@ namespace WallpaperSetter.Console
             _timer.Start();
             _logger.Log($"Timer started for intervals of {_timer.Interval}ms");
 
-            System.Console.CancelKeyPress += (sender, eArgs) => {
+            CancelKeyPress += (sender, eArgs) => {
                 _quitEvent.Set();
                 eArgs.Cancel = true;
             };
@@ -74,6 +73,8 @@ namespace WallpaperSetter.Console
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             var imageUri = _imageUriRepository.Get(_imageIndex);
+
+            _imageIndex++;
 
             _logger.Log($"Updating wallpaper to: {imageUri.AbsoluteUri}");
 

@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WallpaperSetter.Console", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utilities", "Utilities\Utilities.csproj", "{66581837-124B-4A0A-9A9E-E56432051B3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperSetter.Library", "WallpaperSetter.Library\WallpaperSetter.Library.csproj", "{C62A6FD4-D546-4326-B817-CB50D7D1A583}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperSetter.WpfApp", "WallpaperSetter.WpfApp\WallpaperSetter.WpfApp.csproj", "{CC0D54E6-E8B0-4544-838A-C32AE55E17B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WallpaperSetter.Library", "WallpaperSetter.Library\WallpaperSetter.Library.csproj", "{C62A6FD4-D546-4326-B817-CB50D7D1A583}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +27,6 @@ Global
 		{C62A6FD4-D546-4326-B817-CB50D7D1A583}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C62A6FD4-D546-4326-B817-CB50D7D1A583}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C62A6FD4-D546-4326-B817-CB50D7D1A583}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC0D54E6-E8B0-4544-838A-C32AE55E17B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC0D54E6-E8B0-4544-838A-C32AE55E17B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC0D54E6-E8B0-4544-838A-C32AE55E17B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC0D54E6-E8B0-4544-838A-C32AE55E17B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
