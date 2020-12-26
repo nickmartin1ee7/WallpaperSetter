@@ -78,11 +78,18 @@ namespace WallpaperSetter.Console
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
+            var count = _imageUriRepository.GetAll().Count();
+
+            if (_imageIndex >= count)
+            {
+                _imageIndex = 0;
+            }
+
             var imageUri = _imageUriRepository.Get(_imageIndex);
 
             _imageIndex++;
 
-            _logger.Log($"Updating wallpaper to: {imageUri.AbsoluteUri}");
+            _logger.Log($"Updating wallpaper to ({_imageIndex}/{count}): {imageUri.AbsoluteUri}");
 
             Wallpaper.Set(imageUri, Wallpaper.Style.Stretched);
         }
