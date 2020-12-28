@@ -2,4 +2,10 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/WallpaperSetter
+.vs*
+bin/
+obj/
+Properties/
+
+*.user
+*.pdb
