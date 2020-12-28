@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.Timers;
 using Utilities;
 using WallpaperSetter.Library;
+using WallpaperSetter.Library.Instagram;
+using WallpaperSetter.Library.Repositories;
 using static System.Console;
 using Timer = System.Timers.Timer;
 

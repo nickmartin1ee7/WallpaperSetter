@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WallpaperSetter.Library
+namespace WallpaperSetter.Library.Repositories
 {
     public class ImageUriRepository : IImageUriRepository
     {

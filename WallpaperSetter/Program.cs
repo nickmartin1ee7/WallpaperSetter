@@ -9,6 +9,7 @@ namespace WallpaperSetter.Console
         {
             var timeInMinutes = 0;
             var tag = string.Empty;
+
             var valid = false; // Sentry
 
             do

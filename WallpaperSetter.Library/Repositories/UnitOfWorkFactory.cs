@@ -1,4 +1,4 @@
-﻿namespace WallpaperSetter.Library
+﻿namespace WallpaperSetter.Library.Repositories
 {
     public static class UnitOfWorkFactory
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WallpaperSetter.Library
+namespace WallpaperSetter.Library.CustomExceptions
 {
     public class UnableToGetImageUrisException : Exception
     {

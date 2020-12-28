@@ -7,8 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Utilities;
+using WallpaperSetter.Library.CustomExceptions;
 
-namespace WallpaperSetter.Library
+namespace WallpaperSetter.Library.Instagram
 {
     public class InstagramScrapper
     {
