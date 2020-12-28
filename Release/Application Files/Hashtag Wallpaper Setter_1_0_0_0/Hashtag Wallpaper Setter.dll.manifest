@@ -60,25 +60,25 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>JKDMEkhwF4+3/Jrm6yoxUAjICRVojyDDd6tbWCDgBNU=</dsig:DigestValue>
+      <dsig:DigestValue>XQ4CTIGnTePD1se4qUel+gJKbR48XC+8dFchM6xZJUc=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Hashtag Wallpaper Setter.dll" size="12800">
+  <file name="Hashtag Wallpaper Setter.dll" size="13824">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>6nce1jECpmyug19fwq/5jaVtDgAfYpN73K743UrK1hg=</dsig:DigestValue>
+      <dsig:DigestValue>CHaAnqhqXcdCHcNWUPziGsZcY3CWT5Pd6FxtZ0H8r2M=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Hashtag Wallpaper Setter.exe" size="146944">
+  <file name="Hashtag Wallpaper Setter.exe" size="117248">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>ZTteK45XTMZYYCfrvwkvAKdebFfchJsOo4XcWQaHtjc=</dsig:DigestValue>
+      <dsig:DigestValue>EDkXOfadZpW1evk20ul2fdhra8l/kbUxvQ2h8aR8eq8=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Hashtag Wallpaper Setter.runtimeconfig.json" size="147">
@@ -144,13 +144,13 @@
       <dsig:DigestValue>UGhkjshL50UBvv1VJswu3WskkSekkjNJ53Kzpa4HYZI=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="WallpaperSetter.Library.dll" size="59392">
+  <file name="WallpaperSetter.Library.dll" size="59904">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>o7qBe0D9Z+ydK/h1b9qnaLRb9nOBVOt8kd/DW0vKR44=</dsig:DigestValue>
+      <dsig:DigestValue>GNOqHSEZab9ZtaaXFy8qT4QYJ5ih9pAEw/Z+5xdRxcM=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

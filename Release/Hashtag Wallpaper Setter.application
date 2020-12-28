@@ -8,7 +8,7 @@
         <beforeApplicationStartup />
       </update>
     </subscription>
-    <deploymentProvider codebase="https://github.com/nickmartin1ee7/WallpaperSetter/Release/Hashtag%20Wallpaper%20Setter.application" />
+    <deploymentProvider codebase="https://raw.githubusercontent.com/nickmartin1ee7/WallpaperSetter/main/Release/Hashtag%20Wallpaper%20Setter.application" />
   </deployment>
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
@@ -21,7 +21,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>OxpK9p8IpPCMX3Fhn3X3doz8k5V2rvGOrSn3Kdkr+1U=</dsig:DigestValue>
+        <dsig:DigestValue>eh69rXtTC6DyKYwTe3klQJQlFvG2W+SXT1PCz8+O9Sw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
