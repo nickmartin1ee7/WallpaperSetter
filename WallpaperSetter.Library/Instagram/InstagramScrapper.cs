@@ -70,7 +70,7 @@ namespace WallpaperSetter.Library.Instagram
 
             var content = await _client.GetStringAsync(new Uri($"https://fullinsta.photo/hashtag/{_tag}/"));
 
-            // TODO: Implement FullInsta
+            throw new NotImplementedException("FullInsta.photo as a provider is not implemented yet!");
 
             var aUris = uris.ToArray();
 
