@@ -32,7 +32,7 @@ namespace WallpaperSetter.Library.Instagram
             imageUris ??= await GetImagesFromPreviousResults();
 
             if (imageUris is null)
-                throw new UnableToGetImageUrisException();
+                throw new UnableToGetImageUrisException("Instagram and Previous Results methods returned no available image uris. This can happen if Instagram requires authentication, or the previous results did not serialize properly or is empty.");
 
             return imageUris;
         }
