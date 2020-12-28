@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <ApplicationIcon>image.ico</ApplicationIcon>
     <StartupObject>WallpaperSetter.Console.Program</StartupObject>
-    <AssemblyName>Hashtag Wallpaper Setter</AssemblyName>
+    <AssemblyName>Instagram Hashtag Wallpaper</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
