@@ -15,7 +15,7 @@ namespace Utilities
 
     public enum LogOutput
     {
-        Console,
+        Console
     }
 
     public interface ILogger
@@ -28,9 +28,9 @@ namespace Utilities
 
     public class Logger : ILogger
     {
+        private readonly LogOutput _logOutput;
         private readonly ConcurrentQueue<Log> _logs = new ConcurrentQueue<Log>();
         private readonly Type _parentType;
-        private readonly LogOutput _logOutput;
 
         public Logger(Type parentType, LogOutput logOutput)
         {
@@ -92,12 +92,6 @@ namespace Utilities
 
     public class Log
     {
-        internal DateTime Timestamp { get; }
-        internal Type ParentType { get; }
-        internal LogLevel Level { get; }
-        internal string Message { get; }
-        internal Exception Exception { get; }
-
         public Log(DateTime timestamp, Type parentType, LogLevel level, string message)
         {
             Timestamp = timestamp;
@@ -115,14 +109,20 @@ namespace Utilities
             Exception = exception;
         }
 
+        internal DateTime Timestamp { get; }
+        internal Type ParentType { get; }
+        internal LogLevel Level { get; }
+        internal string Message { get; }
+        internal Exception Exception { get; }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
 
-            var m = 
+            var m =
                 Exception != null
-                ? $"{Message} - Stacktrace: {Exception.StackTrace}"
-                : Message;
+                    ? $"{Message} - Stacktrace: {Exception.StackTrace}"
+                    : Message;
 
             sb.Append($"[{Timestamp}] ({Level}) - {ParentType}: {m}");
 

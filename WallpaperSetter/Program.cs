@@ -1,14 +1,15 @@
-﻿using static System.Console;
+﻿using System.Threading.Tasks;
+using static System.Console;
 
 namespace WallpaperSetter.Console
 {
     internal class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var timeInMinutes = 0;
             var tag = string.Empty;
-            var valid = false;  // Sentry
+            var valid = false; // Sentry
 
             do
             {
@@ -16,7 +17,7 @@ namespace WallpaperSetter.Console
 
                 Write("Minutes until next Wallpaper: ");
                 if (!int.TryParse(ReadLine()?.Trim(), out var inputTime)
-                || inputTime <= 0)
+                    || inputTime <= 0)
                     continue;
 
                 timeInMinutes = inputTime * 1000 * 60;
@@ -28,7 +29,7 @@ namespace WallpaperSetter.Console
             } while (!valid);
 
             var app = new ConsoleApp(timeInMinutes, tag);
-            app.Run().GetAwaiter().GetResult();
+            await app.Run();
 
             WriteLine("== PROGRAM ENDED ==");
             ReadKey();

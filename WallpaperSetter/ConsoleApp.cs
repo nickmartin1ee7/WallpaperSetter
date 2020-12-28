@@ -1,33 +1,35 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Utilities;
 using WallpaperSetter.Library;
-using Timer = System.Timers.Timer;
 using static System.Console;
+using Timer = System.Timers.Timer;
 
 namespace WallpaperSetter.Console
 {
     public class ConsoleApp
     {
-        private readonly ILogger _logger;
+        #region Fields
+
+        private static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
         private readonly string _igTag;
+
+        private readonly ILogger _logger;
         private readonly Timer _timer;
-        private readonly IImageUriRepository _imageUriRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         private int _imageIndex;
 
-        private static ManualResetEvent _quitEvent = new ManualResetEvent(false);
+        #endregion
 
         public ConsoleApp(int timeInterval, string igTag)
         {
             _logger = new Logger(GetType(), LogOutput.Console);
-
+            _unitOfWork = UnitOfWorkFactory.Create();
             _igTag = igTag;
             _timer = new Timer(timeInterval);
-            _imageUriRepository = new ImageUriRepository();
         }
 
         public async Task Run()
@@ -39,34 +41,21 @@ namespace WallpaperSetter.Console
 
             _logger.Log($"Scrapping Instagram for images with #{_igTag}");
 
-            var enumerableUris = await scrapper.GetImageUrisAsync();
+            var uris = (await scrapper.GetImageUrisAsync()).ToList();
 
-            if (enumerableUris is null)
-            {
-                _logger.Log(LogLevel.Error, "Unable to populate images from providers!");
-                return;
-            }
+            _unitOfWork.ImageUriRepository.AddRange(uris);
 
-            var uris = enumerableUris as Uri[] ?? enumerableUris.ToArray();
+            _logger.Log($"Populated with {uris.Count} images");
 
-            if (uris.Length == 0)
-            {
-                _logger.Log(LogLevel.Error, "An empty URI list was provided by providers!");
-                return;
-            }
-
-            _imageUriRepository.AddRange(uris);
-
-            _logger.Log($"Populated with {uris.Length} images");
-            
             _timer.Start();
             _logger.Log($"Timer started for intervals of {_timer.Interval}ms");
 
-            CancelKeyPress += (sender, eArgs) => {
+            CancelKeyPress += (sender, eArgs) =>
+            {
                 _quitEvent.Set();
                 eArgs.Cancel = true;
             };
-            
+
             _quitEvent.WaitOne();
 
             _timer.Elapsed -= OnTimedEvent;
@@ -74,18 +63,15 @@ namespace WallpaperSetter.Console
             _logger.Log(LogLevel.Critical, "Interrupt detected! Ending application...");
         }
 
-        #region EventHandlers
+        #region Event Handlers
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            var count = _imageUriRepository.GetAll().Count();
+            var count = _unitOfWork.ImageUriRepository.GetAll().Count();
 
-            if (_imageIndex >= count)
-            {
-                _imageIndex = 0;
-            }
+            if (_imageIndex >= count) _imageIndex = 0;
 
-            var imageUri = _imageUriRepository.Get(_imageIndex);
+            var imageUri = _unitOfWork.ImageUriRepository.Get(_imageIndex);
 
             _imageIndex++;
 
