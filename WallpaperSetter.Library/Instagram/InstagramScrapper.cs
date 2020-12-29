@@ -20,11 +20,19 @@ namespace WallpaperSetter.Library.Instagram
 
         public InstagramScrapper(string tag)
         {
-            _logger = new Logger(GetType(), LogOutput.Console);
             _tag = tag;
-            _saveFile = new FileInfo(Path.Combine(Path.GetTempPath(), $"{tag}-imageUris.json"));
+            _logger = new Logger(GetType(), LogOutput.Console);
+            _saveFile = new FileInfo(
+                Path.Combine(
+                    Path.GetTempPath(), 
+                    $"{tag}-imageUris.json"));
         }
 
+        /// <summary>
+        ///     Attempts to populate a collection of Image URIs via Instagram, FullInsta, or previous results
+        /// </summary>
+        /// <returns>The collection of Image URIS</returns>
+        /// <exception cref="UnableToGetImageUrisException">If no Image URIs were populated, this exception is thrown</exception>
         public async Task<IEnumerable<Uri>> GetImageUrisAsync()
         {
             var imageUris = await GetImageUrisFromInstagramAsync();
@@ -61,10 +69,7 @@ namespace WallpaperSetter.Library.Instagram
 
             _logger.Log("Populated images from Instagram");
 
-            if (imageUris.Count > 0)
-                return imageUris;
-            
-            return null;
+            return imageUris.Count > 0 ? imageUris : null;
         }
 
         private async Task<IEnumerable<Uri>> GetImagesFromFullInstaAsync()
@@ -78,10 +83,8 @@ namespace WallpaperSetter.Library.Instagram
             DumpImageUrisLocally(uris);
 
             _logger.Log("Populated images from FullInsta");
-            if (uris.Count > 0)
-                return uris;
 
-            return null;
+            return uris.Count > 0 ? uris : null;
         }
 
         private async Task<IEnumerable<Uri>> GetImagesFromPreviousResults()
@@ -97,19 +100,15 @@ namespace WallpaperSetter.Library.Instagram
 
             _logger.Log("Populated images from previous results");
 
-            if (urisFromJson.Length > 0)
-                return urisFromJson;
-            
-            return null;
+            return urisFromJson.Length > 0 ? urisFromJson : null;
         }
 
         private void DumpImageUrisLocally(IEnumerable<Uri> imageUris)
         {
-            if (imageUris.Any())
-            {
-                var json = JsonConvert.SerializeObject(imageUris);
-                File.WriteAllText(Path.Combine(_saveFile.FullName), json);
-            }
+            if (!imageUris.Any()) return;
+
+            var json = JsonConvert.SerializeObject(imageUris);
+            File.WriteAllText(Path.Combine(_saveFile.FullName), json);
         }
     }
 }
