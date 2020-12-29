@@ -51,6 +51,9 @@ namespace WallpaperSetter.Library.Instagram
 
             var igResponse = JsonConvert.DeserializeObject<InstagramResponse>(parsedJson);
 
+            if (igResponse.EntryData.TagPage is null)
+                return null;
+
             var imageUris = igResponse.EntryData.TagPage[0].Graphql.Hashtag.EdgeHashtagToMedia.Edges
                 .Select(edge => edge.Node.DisplayUrl).ToList();
 
@@ -99,8 +102,11 @@ namespace WallpaperSetter.Library.Instagram
 
         private void DumpImageUrisLocally(IEnumerable<Uri> imageUris)
         {
-            var json = JsonConvert.SerializeObject(imageUris);
-            File.WriteAllText(Path.Combine(_saveFile.FullName), json);
+            if (imageUris.Any())
+            {
+                var json = JsonConvert.SerializeObject(imageUris);
+                File.WriteAllText(Path.Combine(_saveFile.FullName), json);
+            }
         }
     }
 }

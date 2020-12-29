@@ -13,18 +13,7 @@ namespace WallpaperSetter.Console
 {
     public class ConsoleApp
     {
-        #region Fields
-
-        private static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
-        private readonly string _igTag;
-
-        private readonly ILogger _logger;
-        private readonly Timer _timer;
-        private readonly IUnitOfWork _unitOfWork;
-
-        private int _imageIndex;
-
-        #endregion
+        #region Constructor
 
         public ConsoleApp(int timeInterval, string igTag)
         {
@@ -34,36 +23,8 @@ namespace WallpaperSetter.Console
             _timer = new Timer(timeInterval);
         }
 
-        public async Task Run()
-        {
-            _logger.Log("Starting core functionality");
-            _timer.Elapsed += OnTimedEvent;
+        #endregion
 
-            var scrapper = new InstagramScrapper(_igTag);
-
-            _logger.Log($"Scrapping Instagram for images with #{_igTag}");
-
-            var uris = (await scrapper.GetImageUrisAsync()).ToList();
-
-            _unitOfWork.ImageUriRepository.AddRange(uris);
-
-            _logger.Log($"Populated with {uris.Count} images");
-
-            _timer.Start();
-            _logger.Log($"Timer started for intervals of {_timer.Interval}ms");
-
-            CancelKeyPress += (sender, eArgs) =>
-            {
-                _quitEvent.Set();
-                eArgs.Cancel = true;
-            };
-
-            _quitEvent.WaitOne();
-
-            _timer.Elapsed -= OnTimedEvent;
-
-            _logger.Log(LogLevel.Critical, "Interrupt detected! Ending application...");
-        }
 
         #region Event Handlers
 
@@ -81,6 +42,63 @@ namespace WallpaperSetter.Console
 
             Wallpaper.Set(imageUri, Wallpaper.Style.Stretched);
         }
+
+        #endregion
+
+        #region Methods
+
+        public async Task Run()
+        {
+            _logger.Log("Starting core functionality");
+            _timer.Elapsed += OnTimedEvent;
+
+            var scrapper = new InstagramScrapper(_igTag);
+
+            _logger.Log($"Scrapping Instagram for images with #{_igTag}");
+
+            var uris = (await scrapper.GetImageUrisAsync()).ToList();
+
+            _unitOfWork.ImageUriRepository.AddRange(uris);
+
+            _logger.Log($"Populated with {uris.Count} images");
+
+            RestartTimerAndInvokeHandler();
+
+            _logger.Log($"Timer started for intervals of {_timer.Interval}ms");
+
+            CancelKeyPress += (sender, eArgs) =>
+            {
+                _quitEvent.Set();
+                eArgs.Cancel = true;
+            };
+
+            while (true)
+            {
+                Write("Press enter to skip to next image...");
+                ReadKey();
+                RestartTimerAndInvokeHandler();
+            }
+        }
+
+        private void RestartTimerAndInvokeHandler()
+        {
+            _timer.Stop();
+            OnTimedEvent(null, null); // Set wallpaper
+            _timer.Start();
+        }
+
+        #endregion
+
+        #region Fields
+
+        private static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
+        private readonly string _igTag;
+
+        private readonly ILogger _logger;
+        private readonly Timer _timer;
+        private readonly IUnitOfWork _unitOfWork;
+
+        private int _imageIndex;
 
         #endregion
     }
