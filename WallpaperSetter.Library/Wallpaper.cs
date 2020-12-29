@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * Author:      https://stackoverflow.com/users/55164/neil-n
+ * Edited by:   https://github.com/nickmartin1ee7
+ */
+
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -17,9 +22,9 @@ namespace WallpaperSetter.Library
             Stretched
         }
 
-        private const int SPI_SETDESKWALLPAPER = 20;
-        private const int SPIF_UPDATEINIFILE = 0x01;
-        private const int SPIF_SENDWININICHANGE = 0x02;
+        private const int SPI_SET_DESKTOP_WALLPAPER = 20;
+        private const int SPIF_UPDATE_INI_FILE = 0x01;
+        private const int SPIF_SEND_WIN_INI_CHANGE = 0x02;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
@@ -29,8 +34,7 @@ namespace WallpaperSetter.Library
             var tempPath = DownloadImageFromUriToTempPath(uri);
 
             var key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
-
-
+            
             switch (style)
             {
                 case Style.Tiled:
@@ -50,15 +54,15 @@ namespace WallpaperSetter.Library
             }
 
             // Set in system
-            SystemParametersInfo(SPI_SETDESKWALLPAPER,
+            SystemParametersInfo(SPI_SET_DESKTOP_WALLPAPER,
                 0,
                 tempPath,
-                SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+                SPIF_UPDATE_INI_FILE | SPIF_SEND_WIN_INI_CHANGE);
         }
 
         private static string DownloadImageFromUriToTempPath(Uri uri)
         {
-            var s = new WebClient().OpenRead(uri.ToString());
+            var s = new WebClient().OpenRead(uri.AbsoluteUri);
             using var img =
                 Image.FromStream(s ?? throw new InvalidOperationException("Failed to download image from URI!"));
             var tempPath = Path.Combine(Path.GetTempPath(), "wallpaper.bmp");
