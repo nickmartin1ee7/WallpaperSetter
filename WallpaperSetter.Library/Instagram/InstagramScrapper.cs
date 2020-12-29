@@ -87,6 +87,9 @@ namespace WallpaperSetter.Library.Instagram
         private async Task<IEnumerable<Uri>> GetImagesFromPreviousResults()
         {
             // Read text
+            if (!File.Exists(_saveFile.FullName))
+                return null;
+
             var text = await File.ReadAllTextAsync(_saveFile.FullName);
 
             // Deserialize
