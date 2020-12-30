@@ -12,6 +12,20 @@ namespace WallpaperSetter.Console
 {
     public class ConsoleApp
     {
+        #region Fields
+
+        private static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
+        private readonly string _imgTag;
+
+        private readonly ILogger _logger;
+        private readonly Timer _timer;
+        private readonly Wallpaper.Style _style;
+        private readonly IUnitOfWork _unitOfWork;
+
+        private int _imageIndex;
+
+        #endregion
+
         #region Constructor
 
         public ConsoleApp(int timeInterval, string imgTag, Wallpaper.Style style)
@@ -74,7 +88,7 @@ namespace WallpaperSetter.Console
 
             while (true)
             {
-                Write("Press enter to skip to next image...");
+                WriteLine("Press enter to skip to next image...");
                 ReadKey();
                 RestartTimerAndInvokeHandler();
             }
@@ -86,20 +100,6 @@ namespace WallpaperSetter.Console
             OnTimedEvent(null, null); // Set wallpaper
             _timer.Start();
         }
-
-        #endregion
-
-        #region Fields
-
-        private static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
-        private readonly string _imgTag;
-
-        private readonly ILogger _logger;
-        private readonly Timer _timer;
-        private readonly Wallpaper.Style _style;
-        private readonly IUnitOfWork _unitOfWork;
-
-        private int _imageIndex;
 
         #endregion
     }
