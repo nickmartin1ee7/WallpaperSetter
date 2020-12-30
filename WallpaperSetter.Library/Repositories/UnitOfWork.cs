@@ -9,7 +9,7 @@
     {
         public UnitOfWork()
         {
-            ImageUriRepository = new ImageUriRepository();
+            ImageUriRepository = new InMemoryImageUriRepository();
         }
 
         public IImageUriRepository ImageUriRepository { get; }

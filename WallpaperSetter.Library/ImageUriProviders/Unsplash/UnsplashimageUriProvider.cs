@@ -30,12 +30,19 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
         public async Task<IEnumerable<Uri>> RunAsync()
         {
             var imageUris = await TryGetImageUrisFromUnsplashResponseAsync();
-            imageUris ??= _unitOfWork.ImageUriRepository.PopulateFromJsonFile(_imageTag);
+
+            if (imageUris is null)
+            {
+                imageUris = _unitOfWork.ImageUriRepository.PopulateFromJsonFile(_imageTag);
+            }
+            else
+            {
+                _unitOfWork.ImageUriRepository.AddRange(imageUris);
+                _unitOfWork.ImageUriRepository.StoreToJsonFile(_imageTag);
+            }
 
             if (!imageUris.Any())
-                throw new UnableToGetImageUrisException("Failed to get list of images from Unsplash or previous results!");
-
-            _unitOfWork.ImageUriRepository.StoreToJsonFile(_imageTag);
+                throw new UnableToGetImageUrisException("Failed to get list of images from Unsplash and no previous results exist!");
 
             return imageUris;
         }
@@ -54,6 +61,7 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
                     .Replace("JSON.parse(\"", "")
                     .Replace("\");</script>", "")
                     .Replace("\\\"", "\"")
+                    .Replace("\\\\\"", "\\\"")
                 ;
 
             List<Uri> imageUris = null;
