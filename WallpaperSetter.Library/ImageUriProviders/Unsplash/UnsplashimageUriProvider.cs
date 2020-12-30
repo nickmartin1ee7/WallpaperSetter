@@ -20,12 +20,14 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
             _imgTag = imgTag;
         }
 
-
         public async Task<IEnumerable<Uri>> RunAsync()
         {
             var responseObject = await GetUnsplashResposeJObject();
 
             var imageUris = responseObject["entities"]["photos"].Select(parent => new Uri(parent.First["urls"].First.First.Value<string>())).ToList();
+
+            // Hotfix: Unsplash initial image being a mountain
+            imageUris.RemoveAt(0);
 
             if (!imageUris.Any())
                 throw new UnableToGetImageUrisException("Failed to parse images from Unsplash!");
