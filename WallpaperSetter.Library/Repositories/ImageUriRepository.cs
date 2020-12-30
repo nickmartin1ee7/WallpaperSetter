@@ -1,11 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace WallpaperSetter.Library.Repositories
 {
     public class ImageUriRepository : IImageUriRepository
     {
-        private readonly List<Uri> _imageUris = new List<Uri>();
+        private List<Uri> _imageUris = new List<Uri>();
+
+        public IEnumerable<Uri> PopulateFromJsonFile(string imageTag)
+        {
+            try
+            {
+                var json = File.ReadAllText(Path.Combine(Path.GetTempPath(), $"{imageTag}-images.json"));
+                _imageUris = JsonConvert.DeserializeObject<List<Uri>>(json);
+            }
+            catch (Exception)
+            {
+                _imageUris = new List<Uri>();
+            }
+
+            return _imageUris;
+        }
+
+        public void StoreToJsonFile(string imageTag)
+        {
+            var json = JsonConvert.SerializeObject(_imageUris);
+            File.WriteAllText(Path.Combine(Path.GetTempPath(), $"{imageTag}-images.json"), json);
+        }
 
         public Uri Get(in int i)
         {
@@ -35,6 +58,9 @@ namespace WallpaperSetter.Library.Repositories
 
     public interface IImageUriRepository
     {
+        IEnumerable<Uri> PopulateFromJsonFile(string imageTag);
+        void StoreToJsonFile(string imageTag);
+
         IEnumerable<Uri> GetAll();
         Uri Get(in int i);
         void Add(in Uri uri);

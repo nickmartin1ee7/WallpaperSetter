@@ -82,6 +82,7 @@ namespace WallpaperSetter.Console
                 throw new InvalidWallpaperStyleException($"{inputStyle} is not a valid wallpaper style!");
         }
 
+        // TODO: Replace with a factory
         private static async Task RunConsoleApp()
         {
             var unitOfWork = UnitOfWorkFactory.Create();
