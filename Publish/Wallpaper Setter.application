@@ -8,7 +8,7 @@
         <beforeApplicationStartup />
       </update>
     </subscription>
-    <deploymentProvider codebase="https://www.githubusercontent.com/nickmartin1ee7/WallpaperSetter/main/Publish/Wallpaper%20Setter.application" />
+    <deploymentProvider codebase="https://raw.githubusercontent.com/nickmartin1ee7/WallpaperSetter/main/Publish/Wallpaper%20Setter.application" />
   </deployment>
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
