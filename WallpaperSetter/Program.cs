@@ -17,7 +17,7 @@ namespace WallpaperSetter.Console
             Clear();
 
             SetMinutesUntilNextWallpaper();
-            SetInstagramTag();
+            SetImageTag();
             SetWallpaperStyle();
 
             await RunConsoleApp();
@@ -37,13 +37,13 @@ namespace WallpaperSetter.Console
             SetTimeInMillisecondsFromMinutes(timeInMinutes);
         }
 
-        private static void SetInstagramTag()
+        private static void SetImageTag()
         {
-            Write("Instagram Tag: ");
+            Write("Image Tag: ");
             _tag = ReadLine()?.Trim() ?? string.Empty;
 
             if (!IsPositive(_tag.Length))
-                throw new InvalidInstagramTagException("Input Instagram tag was empty!");
+                throw new InvalidImageTagException("Input image tag was empty!");
         }
 
         private static void SetWallpaperStyle()
@@ -82,9 +82,9 @@ namespace WallpaperSetter.Console
         }
     }
 
-    internal class InvalidInstagramTagException : ArgumentException
+    internal class InvalidImageTagException : ArgumentException
     {
-        public InvalidInstagramTagException(string message)
+        public InvalidImageTagException(string message)
             : base(message)
         {
         }

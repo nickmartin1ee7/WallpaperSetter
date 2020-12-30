@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using Utilities;
 using WallpaperSetter.Library;
-using WallpaperSetter.Library.Instagram;
 using WallpaperSetter.Library.Repositories;
 using static System.Console;
 using Timer = System.Timers.Timer;
@@ -15,10 +14,10 @@ namespace WallpaperSetter.Console
     {
         #region Constructor
 
-        public ConsoleApp(int timeInterval, string igTag, Wallpaper.Style style)
+        public ConsoleApp(int timeInterval, string imgTag, Wallpaper.Style style)
         {
             _timer = new Timer(timeInterval);
-            _igTag = igTag;
+            _imgTag = imgTag;
             _style = style;
             _logger = new Logger(GetType(), LogOutput.Console);
             _unitOfWork = UnitOfWorkFactory.Create();
@@ -53,11 +52,11 @@ namespace WallpaperSetter.Console
             _logger.Log("Starting core functionality");
             _timer.Elapsed += OnTimedEvent;
 
-            var scrapper = new InstagramScrapper(_igTag);
+            var imageProvider = ImageUriProviderFactory.Create(_imgTag);
 
-            _logger.Log($"Scrapping Instagram for images with #{_igTag}");
+            _logger.Log($"Looking for images with #{_imgTag}");
 
-            var uris = (await scrapper.GetImageUrisAsync()).ToList();
+            var uris = (await imageProvider.RunAsync()).ToList();
 
             _unitOfWork.ImageUriRepository.AddRange(uris);
 
@@ -93,7 +92,7 @@ namespace WallpaperSetter.Console
         #region Fields
 
         private static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
-        private readonly string _igTag;
+        private readonly string _imgTag;
 
         private readonly ILogger _logger;
         private readonly Timer _timer;
