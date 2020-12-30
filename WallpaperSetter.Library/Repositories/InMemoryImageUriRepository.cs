@@ -15,13 +15,20 @@ namespace WallpaperSetter.Library.Repositories
 
         public IEnumerable<Uri> PopulateFromJsonFile(string imageTag)
         {
+            var fileName = new FileInfo(GetFileName(imageTag));
+
             try
             {
-                var json = File.ReadAllText(GetFileName(imageTag));
+                var json = File.ReadAllText(fileName.FullName);
                 _imageUris = JsonConvert.DeserializeObject<List<Uri>>(json);
             }
             catch (Exception)
             {
+                if (fileName.Exists)
+                {
+                    fileName.Delete();
+                }
+
                 _imageUris = new List<Uri>();
             }
 
