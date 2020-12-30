@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using WallpaperSetter.Library;
 using static System.Console;
@@ -47,8 +48,10 @@ namespace WallpaperSetter.Console
 
         private static void SetWallpaperStyle()
         {
+            var textInfo = CultureInfo.CurrentCulture.TextInfo;
+
             Write("Wallpaper style (Tiled, Centered, Stretched): ");
-            var inputStyle = ReadLine()?.Trim() ?? string.Empty;
+            var inputStyle = textInfo.ToTitleCase(ReadLine()?.Trim() ?? string.Empty);
 
             if (!Enum.TryParse(inputStyle, out _style))
                 throw new InvalidWallpaperStyleException($"{inputStyle} is not a valid wallpaper style!");
@@ -62,7 +65,7 @@ namespace WallpaperSetter.Console
 
         private static bool IsPositive(int n)
         {
-            return n >= 0;
+            return n > 0;
         }
 
         private static void SetTimeInMillisecondsFromMinutes(in int timeInMinutes)
