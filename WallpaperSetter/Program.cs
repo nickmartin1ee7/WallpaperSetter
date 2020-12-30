@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.Threading.Tasks;
 using WallpaperSetter.Library;
@@ -14,16 +15,32 @@ namespace WallpaperSetter.Console
 
         public static async Task Main(string[] args)
         {
-            Clear();
+            while (true)
+            {
+                Clear();
+                ResetFields();
 
-            SetMinutesUntilNextWallpaper();
-            SetImageTag();
-            SetWallpaperStyle();
+                try
+                {
+                    SetMinutesUntilNextWallpaper();
+                    SetImageTag();
+                    SetWallpaperStyle();
+                    await RunConsoleApp();
+                }
+                catch (Exception e)
+                {
+                    WriteLine(e.Message);
+                }
 
-            await RunConsoleApp();
+                Write("Press any key to continue...");
+                ReadKey();
+            }
+        }
 
-            WriteLine("== PROGRAM ENDED ==");
-            ReadKey();
+        private static void ResetFields()
+        {
+            _timeInMilliseconds = 0;
+            _tag = string.Empty;
         }
 
         private static void SetMinutesUntilNextWallpaper()
