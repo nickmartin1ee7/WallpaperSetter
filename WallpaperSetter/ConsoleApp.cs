@@ -64,6 +64,7 @@ namespace WallpaperSetter.Console
         public async Task Run()
         {
             _logger.Information("Starting core functionality");
+            
             _timer.Elapsed += OnTimedEvent;
 
             var imageProvider = ImageUriProviderFactory.Create(_imgTag);
