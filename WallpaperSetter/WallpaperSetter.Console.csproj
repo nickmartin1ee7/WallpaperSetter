@@ -6,6 +6,12 @@
     <ApplicationIcon>image.ico</ApplicationIcon>
     <StartupObject>WallpaperSetter.Console.Program</StartupObject>
     <AssemblyName>Wallpaper Setter</AssemblyName>
+    <Version>2.2.0</Version>
+    <PackageProjectUrl>https://github.com/nickmartin1ee7/WallpaperSetter</PackageProjectUrl>
+    <PackageIcon>image.ico</PackageIcon>
+    <RepositoryUrl>https://github.com/nickmartin1ee7/WallpaperSetter</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <Authors>Nicholas Martin</Authors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +25,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WallpaperSetter.Library\WallpaperSetter.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="image.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
