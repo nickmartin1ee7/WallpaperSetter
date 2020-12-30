@@ -24,7 +24,7 @@ namespace WallpaperSetter.Library.Instagram
             _logger = new Logger(GetType(), LogOutput.Console);
             _saveFile = new FileInfo(
                 Path.Combine(
-                    Path.GetTempPath(), 
+                    Path.GetTempPath(),
                     $"{tag}-imageUris.json"));
         }
 
@@ -40,7 +40,8 @@ namespace WallpaperSetter.Library.Instagram
             imageUris ??= await GetImagesFromPreviousResults();
 
             if (imageUris is null)
-                throw new UnableToGetImageUrisException("Instagram and Previous Results methods returned no available image uris. This can happen if Instagram requires authentication, or the previous results did not serialize properly or is empty.");
+                throw new UnableToGetImageUrisException(
+                    "Instagram and Previous Results methods returned no available image uris. This can happen if Instagram requires authentication, or the previous results did not serialize properly or is empty.");
 
             return imageUris;
         }
@@ -79,7 +80,7 @@ namespace WallpaperSetter.Library.Instagram
             var content = await _client.GetStringAsync(new Uri($"https://fullinsta.photo/hashtag/{_tag}/"));
 
             throw new NotImplementedException("FullInsta.photo as a provider is not implemented yet!");
-            
+
             DumpImageUrisLocally(uris);
 
             _logger.Log("Populated images from FullInsta");

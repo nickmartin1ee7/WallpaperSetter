@@ -6,7 +6,6 @@ namespace WallpaperSetter.Library.CustomExceptions
     {
         public UnableToGetImageUrisException(string message) : base(message)
         {
-            
         }
     }
 }

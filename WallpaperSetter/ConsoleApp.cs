@@ -15,12 +15,13 @@ namespace WallpaperSetter.Console
     {
         #region Constructor
 
-        public ConsoleApp(int timeInterval, string igTag)
+        public ConsoleApp(int timeInterval, string igTag, Wallpaper.Style style)
         {
+            _timer = new Timer(timeInterval);
+            _igTag = igTag;
+            _style = style;
             _logger = new Logger(GetType(), LogOutput.Console);
             _unitOfWork = UnitOfWorkFactory.Create();
-            _igTag = igTag;
-            _timer = new Timer(timeInterval);
         }
 
         #endregion
@@ -40,7 +41,7 @@ namespace WallpaperSetter.Console
 
             _logger.Log($"Updating wallpaper to ({_imageIndex}/{count}): {imageUri.AbsoluteUri}");
 
-            Wallpaper.Set(imageUri, Wallpaper.Style.Stretched);
+            Wallpaper.Set(imageUri, _style);
         }
 
         #endregion
@@ -96,6 +97,7 @@ namespace WallpaperSetter.Console
 
         private readonly ILogger _logger;
         private readonly Timer _timer;
+        private readonly Wallpaper.Style _style;
         private readonly IUnitOfWork _unitOfWork;
 
         private int _imageIndex;

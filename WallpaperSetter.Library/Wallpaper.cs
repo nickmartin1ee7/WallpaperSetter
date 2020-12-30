@@ -34,7 +34,7 @@ namespace WallpaperSetter.Library
             var tempPath = DownloadImageFromUriToTempPath(uri);
 
             var key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
-            
+
             switch (style)
             {
                 case Style.Tiled:
