@@ -2,7 +2,9 @@
 using System.Drawing;
 using System.Globalization;
 using System.Threading.Tasks;
+using Serilog;
 using WallpaperSetter.Library;
+using WallpaperSetter.Library.Repositories;
 using static System.Console;
 
 namespace WallpaperSetter.Console
@@ -15,6 +17,12 @@ namespace WallpaperSetter.Console
 
         public static async Task Main(string[] args)
         {
+            var Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
+            Log.Logger = Logger;
+
             while (true)
             {
                 Clear();
@@ -29,7 +37,7 @@ namespace WallpaperSetter.Console
                 }
                 catch (Exception e)
                 {
-                    WriteLine(e.Message);
+                    Logger.Error(e, "Something went wrong!");
                 }
 
                 Write("Press any key to continue...");
@@ -76,7 +84,15 @@ namespace WallpaperSetter.Console
 
         private static async Task RunConsoleApp()
         {
-            var app = new ConsoleApp(_timeInMilliseconds, _tag, _style);
+            var unitOfWork = UnitOfWorkFactory.Create();
+
+            var app = new ConsoleApp(
+                Log.Logger,
+                unitOfWork,
+                _timeInMilliseconds,
+                _tag,
+                _style);
+
             await app.Run();
         }
 

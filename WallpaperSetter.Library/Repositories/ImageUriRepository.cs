@@ -7,9 +7,9 @@ namespace WallpaperSetter.Library.Repositories
     {
         private readonly List<Uri> _imageUris = new List<Uri>();
 
-        public Uri Get(in int imageIndex)
+        public Uri Get(in int i)
         {
-            return _imageUris[imageIndex];
+            return _imageUris[i];
         }
 
         public IEnumerable<Uri> GetAll()
@@ -17,22 +17,28 @@ namespace WallpaperSetter.Library.Repositories
             return _imageUris;
         }
 
-        public void Add(Uri uri)
+        public void Add(in Uri uri)
         {
             _imageUris.Add(uri);
         }
 
-        public void AddRange(IEnumerable<Uri> uris)
+        public void AddRange(in IEnumerable<Uri> uris)
         {
             _imageUris.AddRange(uris);
+        }
+
+        public void RemoveAt(in int i)
+        {
+            _imageUris.RemoveAt(i);
         }
     }
 
     public interface IImageUriRepository
     {
         IEnumerable<Uri> GetAll();
-        void Add(Uri uri);
-        void AddRange(IEnumerable<Uri> uris);
-        Uri Get(in int imageIndex);
+        Uri Get(in int i);
+        void Add(in Uri uri);
+        void AddRange(in IEnumerable<Uri> uris);
+        void RemoveAt(in int i);
     }
 }

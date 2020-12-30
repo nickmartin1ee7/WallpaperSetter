@@ -37,16 +37,22 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
 
         private async Task<JObject> GetUnsplashResposeJObject()
         {
-            var client = new HttpClient();
+            using var client = new HttpClient();
+
             var content = await client.GetStringAsync(TargetUri);
+
             var regex = new Regex("(JSON.parse\\(\\\").*(\\\"\\);<\\/script>)");
+
             var strippedContentRegex = regex.Match(content);
+
             var json = strippedContentRegex.Value
                     .Replace("JSON.parse(\"", "")
                     .Replace("\");</script>", "")
                     .Replace("\\\"", "\"")
                 ;
+
             var responseObject = JObject.Parse(json);
+
             return responseObject;
         }
     }

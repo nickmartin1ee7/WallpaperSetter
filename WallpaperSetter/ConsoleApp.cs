@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using Utilities;
+using Serilog;
 using WallpaperSetter.Library;
 using WallpaperSetter.Library.Repositories;
 using static System.Console;
@@ -28,13 +28,13 @@ namespace WallpaperSetter.Console
 
         #region Constructor
 
-        public ConsoleApp(int timeInterval, string imgTag, Wallpaper.Style style)
+        public ConsoleApp(ILogger logger, IUnitOfWork unitOfWork, int timeInterval, string imgTag, Wallpaper.Style style)
         {
+            _logger = logger;
+            _unitOfWork = unitOfWork;
             _timer = new Timer(timeInterval);
             _imgTag = imgTag;
             _style = style;
-            _logger = new Logger(GetType(), LogOutput.Console);
-            _unitOfWork = UnitOfWorkFactory.Create();
         }
 
         #endregion
@@ -52,7 +52,7 @@ namespace WallpaperSetter.Console
 
             _imageIndex++;
 
-            _logger.Log($"Updating wallpaper to ({_imageIndex}/{count}): {imageUri.AbsoluteUri}");
+            _logger.Information($"Updating wallpaper to ({_imageIndex}/{count}): {imageUri.AbsoluteUri}");
 
             Wallpaper.Set(imageUri, _style);
         }
@@ -63,22 +63,22 @@ namespace WallpaperSetter.Console
 
         public async Task Run()
         {
-            _logger.Log("Starting core functionality");
+            _logger.Information("Starting core functionality");
             _timer.Elapsed += OnTimedEvent;
 
             var imageProvider = ImageUriProviderFactory.Create(_imgTag);
 
-            _logger.Log($"Looking for images with #{_imgTag}");
+            _logger.Information($"Looking for images with #{_imgTag}");
 
             var uris = (await imageProvider.RunAsync()).ToList();
 
             _unitOfWork.ImageUriRepository.AddRange(uris);
 
-            _logger.Log($"Populated with {uris.Count} images");
+            _logger.Information($"Populated with {uris.Count} images");
 
             RestartTimerAndInvokeHandler();
 
-            _logger.Log($"Timer started for intervals of {_timer.Interval}ms");
+            _logger.Information($"Timer started for intervals of {_timer.Interval}ms");
 
             CancelKeyPress += (sender, eArgs) =>
             {

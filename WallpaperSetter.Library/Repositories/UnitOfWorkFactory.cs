@@ -2,9 +2,11 @@
 {
     public static class UnitOfWorkFactory
     {
+        private static IUnitOfWork _instance;
+
         public static IUnitOfWork Create()
         {
-            return new UnitOfWork();
+            return _instance ??= new UnitOfWork();
         }
     }
 }
