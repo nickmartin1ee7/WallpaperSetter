@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WallpaperSetter.Library.Models;
 using WallpaperSetter.Library.Repositories;
 
 namespace WallpaperSetter.Service
@@ -17,7 +18,8 @@ namespace WallpaperSetter.Service
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
-                    services.AddSingleton<UnitOfWork>();
+                    services.AddTransient<Configuration>();
+                    services.AddSingleton<IUnitOfWork, UnitOfWork>();
                     // services.AddScoped<UnsplashImageUriProvider>();
                 });
     }

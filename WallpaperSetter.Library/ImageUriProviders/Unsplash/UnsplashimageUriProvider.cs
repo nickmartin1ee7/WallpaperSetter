@@ -34,7 +34,6 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
             }
             else
             {
-                _unitOfWork.ImageUriRepository.AddRange(imageUris);
                 _unitOfWork.ImageUriRepository.StoreToJsonFile(_imageTag);
             }
 
