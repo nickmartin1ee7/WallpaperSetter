@@ -19,7 +19,6 @@ namespace WallpaperSetter.Service
                 {
                     services.AddHostedService<Worker>();
                     services.AddTransient<Configuration>();
-                    services.AddSingleton<IUnitOfWork, UnitOfWork>();
                 });
     }
 }
