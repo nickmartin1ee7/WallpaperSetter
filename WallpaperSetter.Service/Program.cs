@@ -1,9 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using WallpaperSetter.Library.Repositories;
 
 namespace WallpaperSetter.Service
 {
@@ -16,9 +13,12 @@ namespace WallpaperSetter.Service
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
+                    services.AddSingleton<UnitOfWork>();
+                    // services.AddScoped<UnsplashImageUriProvider>();
                 });
     }
 }

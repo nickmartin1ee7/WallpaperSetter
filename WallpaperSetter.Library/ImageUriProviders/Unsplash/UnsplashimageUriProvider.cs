@@ -6,23 +6,20 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Serilog;
 using WallpaperSetter.Library.CustomExceptions;
 using WallpaperSetter.Library.Repositories;
 
 namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
 {
-    public class UnsplashimageUriProvider : IImageUriProvider
+    public class UnsplashImageUriProvider : IImageUriProvider
     {
-        private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly string _imageTag;
 
         private Uri TargetUri => new Uri($"https://unsplash.com/s/photos/{_imageTag}");
 
-        public UnsplashimageUriProvider(ILogger logger, IUnitOfWork unitOfWork, string imageTag)
+        public UnsplashImageUriProvider(IUnitOfWork unitOfWork, string imageTag)
         {
-            _logger = logger;
             _unitOfWork = unitOfWork;
             _imageTag = imageTag;
         }
@@ -77,7 +74,6 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
             }
             catch (JsonReaderException e)
             {
-                _logger.Error(e, "Failed to get new list of images from Unsplash!");
             }
 
             return imageUris;
