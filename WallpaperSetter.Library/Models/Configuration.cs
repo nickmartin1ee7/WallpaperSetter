@@ -1,9 +1,9 @@
 ﻿namespace WallpaperSetter.Library.Models
 {
-    public class Configuration
+    public record Configuration
     {
-        public int InvervalInMinutes { get; set; } = 1;
-        public string ImageTag { get; set; } = "dogs";
-        public Wallpaper.Style Style { get; set; } = Wallpaper.Style.Stretched;
+        public int InvervalInMinutes { get; set; }
+        public string ImageTag { get; set; }
+        public Wallpaper.Style Style { get; set; }
     }
 }

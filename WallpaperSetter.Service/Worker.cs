@@ -1,9 +1,8 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using WallpaperSetter.Library;
@@ -12,6 +11,7 @@ using WallpaperSetter.Library.Models;
 using WallpaperSetter.Library.ImageUriProviders;
 using System.Linq;
 using WallpaperSetter.Library.Repositories;
+using System.IO;
 
 namespace WallpaperSetter.Service
 {
@@ -22,59 +22,68 @@ namespace WallpaperSetter.Service
         private readonly Configuration _configuration;
         private int _currentImageIndex;
 
-        private readonly Subject<Unit> _wallpaperDownloadSubject = new Subject<Unit>();
-        private IDisposable _downloadDisposable;
         private IDisposable _setWallpaperDisposable;
 
-
         public IObservable<long> intervalObservable { get; private set; }
-        public IObservable<Unit> wallpaperDownloadObservable => _wallpaperDownloadSubject.AsObservable();
+        
 
         public Worker(ILogger<Worker> logger, Configuration configuration)
         {
             _logger = logger;
             _configuration = configuration;
+
+            var configJson = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            try
+            {
+                configJson.GetSection("Parameters").Bind(_configuration);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e.Message);
+                 throw;
+            }
+
             _imageUriProvider = ImageUriProviderFactory.Create(_configuration);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Executing Service.");
+
             await _imageUriProvider.RunAsync();
 
             intervalObservable = Observable.Interval(TimeSpan.FromMinutes(_configuration.InvervalInMinutes));
 
-            _downloadDisposable = intervalObservable.Subscribe(DownloadWallpaper);
-            _setWallpaperDisposable = wallpaperDownloadObservable.Subscribe(SetWallpaper);
+            _setWallpaperDisposable = intervalObservable.Subscribe(SetWallpaper);
 
-            // Initialize first download.
-            DownloadWallpaper(_currentImageIndex);
-            
-            /*
-            if (stoppingToken.IsCancellationRequested)
-            {
-                _downloadDisposable.Dispose();
-                _setWallpaperDisposable.Dispose();
-            }
-            */
+            SetWallpaper(0);
         }
 
-        private void DownloadWallpaper(long _)
+        public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Downloaded Image");
-            
-            _wallpaperDownloadSubject.OnNext(Unit.Default);
+            _logger.LogInformation("Stopping Service.");
+
+            _setWallpaperDisposable.Dispose();
+
+            return base.StopAsync(cancellationToken);
         }
 
-        private void SetWallpaper(Unit _)
+        private void SetWallpaper(long _)
         {
             var imageUris = UnitOfWorkFactory.Create().ImageUriRepository.ImageUris.ToList();
 
             if (_currentImageIndex >= imageUris.Count)
                 _currentImageIndex = 0;
 
-            Wallpaper.Set(imageUris[_currentImageIndex++], _configuration.Style);
+            var currentWallpaper = imageUris[_currentImageIndex++];
 
-            _logger.LogInformation("Set Wallpaper");
+            _logger.LogInformation($"Set Wallpaper to: {currentWallpaper}");
+
+            Wallpaper.Set(currentWallpaper, _configuration.Style);
         }
     }
 }
