@@ -85,11 +85,8 @@ namespace WallpaperSetter.Console
         // TODO: Replace with a factory
         private static async Task RunConsoleApp()
         {
-            var unitOfWork = UnitOfWorkFactory.Create();
-
             var app = new ConsoleApp(
                 Log.Logger,
-                unitOfWork,
                 _timeInMilliseconds,
                 _tag,
                 _style);

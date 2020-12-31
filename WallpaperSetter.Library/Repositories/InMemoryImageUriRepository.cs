@@ -5,9 +5,17 @@ using Newtonsoft.Json;
 
 namespace WallpaperSetter.Library.Repositories
 {
+    public interface IImageUriRepository
+    {
+        IEnumerable<Uri> ImageUris { get; set; }
+        IEnumerable<Uri> PopulateFromJsonFile(string imageTag);
+        void StoreToJsonFile(string imageTag);
+    }
+
     public class InMemoryImageUriRepository : IImageUriRepository
     {
-        private List<Uri> _imageUris = new List<Uri>();
+        public IEnumerable<Uri> ImageUris { get; set; } = new List<Uri>();
+
         private string GetFileName(string imageTag)
         {
             return Path.Combine(Path.GetTempPath(), $"{imageTag}-images.json");
@@ -20,7 +28,7 @@ namespace WallpaperSetter.Library.Repositories
             try
             {
                 var json = File.ReadAllText(fileName.FullName);
-                _imageUris = JsonConvert.DeserializeObject<List<Uri>>(json);
+                ImageUris = JsonConvert.DeserializeObject<List<Uri>>(json);
             }
             catch (Exception)
             {
@@ -29,53 +37,16 @@ namespace WallpaperSetter.Library.Repositories
                     fileName.Delete();
                 }
 
-                _imageUris = new List<Uri>();
+                ImageUris = new List<Uri>();
             }
 
-            return _imageUris;
+            return ImageUris;
         }
 
         public void StoreToJsonFile(string imageTag)
         {
-            var json = JsonConvert.SerializeObject(_imageUris);
+            var json = JsonConvert.SerializeObject(ImageUris);
             File.WriteAllText(GetFileName(imageTag), json);
         }
-        
-        public Uri Get(in int i)
-        {
-            return _imageUris[i];
-        }
-
-        public IEnumerable<Uri> GetAll()
-        {
-            return _imageUris;
-        }
-
-        public void Add(in Uri uri)
-        {
-            _imageUris.Add(uri);
-        }
-
-        public void AddRange(in IEnumerable<Uri> uris)
-        {
-            _imageUris.AddRange(uris);
-        }
-
-        public void RemoveAt(in int i)
-        {
-            _imageUris.RemoveAt(i);
-        }
-    }
-
-    public interface IImageUriRepository
-    {
-        IEnumerable<Uri> PopulateFromJsonFile(string imageTag);
-        void StoreToJsonFile(string imageTag);
-
-        IEnumerable<Uri> GetAll();
-        Uri Get(in int i);
-        void Add(in Uri uri);
-        void AddRange(in IEnumerable<Uri> uris);
-        void RemoveAt(in int i);
     }
 }

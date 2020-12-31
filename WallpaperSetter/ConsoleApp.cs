@@ -20,7 +20,6 @@ namespace WallpaperSetter.Console
         private readonly ILogger _logger;
         private readonly Timer _timer;
         private readonly Wallpaper.Style _style;
-        private readonly IUnitOfWork _unitOfWork;
 
         private int _imageIndex;
 
@@ -28,10 +27,9 @@ namespace WallpaperSetter.Console
 
         #region Constructor
 
-        public ConsoleApp(ILogger logger, IUnitOfWork unitOfWork, int timeInterval, string imgTag, Wallpaper.Style style)
+        public ConsoleApp(ILogger logger, int timeInterval, string imgTag, Wallpaper.Style style)
         {
             _logger = logger;
-            _unitOfWork = unitOfWork;
             _timer = new Timer(timeInterval);
             _imgTag = imgTag;
             _style = style;
@@ -44,15 +42,14 @@ namespace WallpaperSetter.Console
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            var count = _unitOfWork.ImageUriRepository.GetAll().Count();
+            var unitOfWork = UnitOfWorkFactory.Create();
+            var imageUris = unitOfWork.ImageUriRepository.ImageUris.ToList();
+            
+            if (_imageIndex >= imageUris.Count) _imageIndex = 0;
 
-            if (_imageIndex >= count) _imageIndex = 0;
+            var imageUri = imageUris[_imageIndex++];
 
-            var imageUri = _unitOfWork.ImageUriRepository.Get(_imageIndex);
-
-            _imageIndex++;
-
-            _logger.Information($"Updating wallpaper to ({_imageIndex}/{count}): {imageUri.AbsoluteUri}");
+            _logger.Information($"Updating wallpaper to ({_imageIndex}/{imageUris.Count}): {imageUri.AbsoluteUri}");
 
             Wallpaper.Set(imageUri, _style);
         }
@@ -71,11 +68,9 @@ namespace WallpaperSetter.Console
 
             _logger.Information($"Looking for images with #{_imgTag}");
 
-            var uris = (await imageProvider.RunAsync()).ToList();
-
-            _unitOfWork.ImageUriRepository.AddRange(uris);
-
-            _logger.Information($"Populated with {uris.Count} images");
+            await imageProvider.RunAsync();
+            
+            _logger.Information($"Populated with {UnitOfWorkFactory.Create().ImageUriRepository.ImageUris.Count()} images");
 
             RestartTimerAndInvokeHandler();
 

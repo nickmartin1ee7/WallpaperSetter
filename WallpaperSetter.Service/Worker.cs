@@ -10,8 +10,8 @@ using WallpaperSetter.Library;
 using WallpaperSetter.Service.Factories;
 using WallpaperSetter.Library.Models;
 using WallpaperSetter.Library.ImageUriProviders;
-using System.Collections.Generic;
 using System.Linq;
+using WallpaperSetter.Library.Repositories;
 
 namespace WallpaperSetter.Service
 {
@@ -21,7 +21,6 @@ namespace WallpaperSetter.Service
         private readonly IImageUriProvider _imageUriProvider;
         private readonly Configuration _configuration;
         private int _currentImageIndex;
-        private List<Uri> _imageUris;
 
         private readonly Subject<Unit> _wallpaperDownloadSubject = new Subject<Unit>();
         private IDisposable _downloadDisposable;
@@ -40,15 +39,15 @@ namespace WallpaperSetter.Service
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _imageUris = (await _imageUriProvider.RunAsync()).ToList();
+            await _imageUriProvider.RunAsync();
 
             intervalObservable = Observable.Interval(TimeSpan.FromMinutes(_configuration.InvervalInMinutes));
 
-            _downloadDisposable = intervalObservable.Subscribe(downloadWallpaper);
-            _setWallpaperDisposable = wallpaperDownloadObservable.Subscribe(setWallpaper);
+            _downloadDisposable = intervalObservable.Subscribe(DownloadWallpaper);
+            _setWallpaperDisposable = wallpaperDownloadObservable.Subscribe(SetWallpaper);
 
             // Initialize first download.
-            downloadWallpaper(_currentImageIndex);
+            DownloadWallpaper(_currentImageIndex);
             
             /*
             if (stoppingToken.IsCancellationRequested)
@@ -59,16 +58,21 @@ namespace WallpaperSetter.Service
             */
         }
 
-        private void downloadWallpaper(long _)
+        private void DownloadWallpaper(long _)
         {
             _logger.LogInformation("Downloaded Image");
             
             _wallpaperDownloadSubject.OnNext(Unit.Default);
         }
 
-        private void setWallpaper(Unit _)
+        private void SetWallpaper(Unit _)
         {
-            Wallpaper.Set(_imageUris[_currentImageIndex++], _configuration.Style);
+            var imageUris = UnitOfWorkFactory.Create().ImageUriRepository.ImageUris.ToList();
+
+            if (_currentImageIndex >= imageUris.Count)
+                _currentImageIndex = 0;
+
+            Wallpaper.Set(imageUris[_currentImageIndex++], _configuration.Style);
 
             _logger.LogInformation("Set Wallpaper");
         }

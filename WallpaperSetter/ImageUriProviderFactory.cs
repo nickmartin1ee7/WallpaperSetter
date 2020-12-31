@@ -7,6 +7,6 @@ namespace WallpaperSetter.Console
     internal static class ImageUriProviderFactory
     {
         internal static IImageUriProvider Create(string imageTag)
-            => new UnsplashImageUriProvider(UnitOfWorkFactory.Create(), imageTag);
+            => new UnsplashImageUriProvider(imageTag);
     }
 }

@@ -15,7 +15,6 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
     {
         #region Fields
 
-        private readonly IUnitOfWork _unitOfWork;
         private readonly string _imageTag;
         private Uri TargetUri => new Uri($"https://unsplash.com/s/photos/{_imageTag}");
 
@@ -23,9 +22,8 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
         
         #region Constructor
 
-        public UnsplashImageUriProvider(IUnitOfWork unitOfWork, string imageTag)
+        public UnsplashImageUriProvider(string imageTag)
         {
-            _unitOfWork = unitOfWork;
             _imageTag = imageTag;
         }
 
@@ -33,23 +31,24 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
 
         #region Public Methods
 
-        public async Task<IEnumerable<Uri>> RunAsync()
+        public async Task RunAsync()
         {
-            var imageUris = await TryGetImageUrisFromUnsplashResponseAsync();
+            var unitOfWork = UnitOfWorkFactory.Create();
+            var imageRepo = unitOfWork.ImageUriRepository;
 
-            if (imageUris is null)
+            imageRepo.ImageUris = await TryGetImageUrisFromUnsplashResponseAsync();
+
+            if (imageRepo.ImageUris is null)
             {
-                imageUris = _unitOfWork.ImageUriRepository.PopulateFromJsonFile(_imageTag);
+                imageRepo.PopulateFromJsonFile(_imageTag);
             }
             else
             {
-                _unitOfWork.ImageUriRepository.StoreToJsonFile(_imageTag);
+                imageRepo.StoreToJsonFile(_imageTag);
             }
 
-            if (!imageUris.Any())
+            if (!imageRepo.ImageUris.Any())
                 throw new UnableToGetImageUrisException("Failed to get list of images from Unsplash and no previous results exist!");
-
-            return imageUris;
         }
 
         #endregion

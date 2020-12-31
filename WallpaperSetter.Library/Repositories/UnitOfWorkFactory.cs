@@ -2,7 +2,7 @@
 {
     public static class UnitOfWorkFactory
     {
-        private static IUnitOfWork _instance;
+        private static IUnitOfWork _instance;   // Singleton
 
         public static IUnitOfWork Create()
         {
