@@ -14,11 +14,16 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
 {
     public class UnsplashimageUriProvider : IImageUriProvider
     {
+        #region Fields
+
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly string _imageTag;
-
         private Uri TargetUri => new Uri($"https://unsplash.com/s/photos/{_imageTag}");
+
+        #endregion
+        
+        #region Constructor
 
         public UnsplashimageUriProvider(ILogger logger, IUnitOfWork unitOfWork, string imageTag)
         {
@@ -26,6 +31,10 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
             _unitOfWork = unitOfWork;
             _imageTag = imageTag;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public async Task<IEnumerable<Uri>> RunAsync()
         {
@@ -47,6 +56,10 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
             return imageUris;
         }
 
+        #endregion
+
+        #region Private Methods
+        
         private async Task<IEnumerable<Uri>> TryGetImageUrisFromUnsplashResponseAsync()
         {
             using var client = new HttpClient();
@@ -82,5 +95,8 @@ namespace WallpaperSetter.Library.ImageUriProviders.Unsplash
 
             return imageUris;
         }
+
+        #endregion
+
     }
 }
