@@ -14,7 +14,6 @@ namespace WallpaperSetter.Console
     {
         #region Fields
 
-        private static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
         private readonly string _imgTag;
 
         private readonly ILogger _logger;
@@ -75,13 +74,7 @@ namespace WallpaperSetter.Console
             RestartTimerAndInvokeHandler();
 
             _logger.Information($"Timer started for intervals of {_timer.Interval}ms");
-
-            CancelKeyPress += (sender, eArgs) =>
-            {
-                _quitEvent.Set();
-                eArgs.Cancel = true;
-            };
-
+            
             while (true)
             {
                 WriteLine("Press enter to skip to next image...");

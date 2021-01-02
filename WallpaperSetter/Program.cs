@@ -17,11 +17,11 @@ namespace WallpaperSetter.Console
 
         public static async Task Main(string[] args)
         {
-            var Logger = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .CreateLogger();
 
-            Log.Logger = Logger;
+            Log.Logger = logger;
 
             while (true)
             {
@@ -37,7 +37,7 @@ namespace WallpaperSetter.Console
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(e, "Something went wrong!");
+                    logger.Error(e, "Something went wrong!");
                 }
 
                 Write("Press any key to continue...");
