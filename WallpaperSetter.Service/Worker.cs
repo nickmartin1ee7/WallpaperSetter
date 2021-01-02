@@ -60,7 +60,7 @@ namespace WallpaperSetter.Service
 
         private void DownloadWallpaper(long _)
         {
-            _logger.LogInformation("Downloaded Image");
+            _logger.LogInformation("Updating wallpaper...");
             
             _wallpaperDownloadSubject.OnNext(Unit.Default);
         }
@@ -74,7 +74,7 @@ namespace WallpaperSetter.Service
 
             Wallpaper.Set(imageUris[_currentImageIndex++], _configuration.Style);
 
-            _logger.LogInformation("Set Wallpaper");
+            _logger.LogInformation("Wallpaper updated!");
         }
     }
 }
