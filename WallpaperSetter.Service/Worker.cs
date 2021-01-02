@@ -25,8 +25,7 @@ namespace WallpaperSetter.Service
         private readonly Subject<Unit> _wallpaperDownloadSubject = new Subject<Unit>();
         private IDisposable _downloadDisposable;
         private IDisposable _setWallpaperDisposable;
-
-
+        
         public IObservable<long> intervalObservable { get; private set; }
         public IObservable<Unit> wallpaperDownloadObservable => _wallpaperDownloadSubject.AsObservable();
 
@@ -35,6 +34,12 @@ namespace WallpaperSetter.Service
             _logger = logger;
             _configuration = configuration;
             _imageUriProvider = ImageUriProviderFactory.Create(_configuration);
+        }
+
+        ~Worker()
+        {
+            _downloadDisposable.Dispose();
+            _setWallpaperDisposable.Dispose();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
